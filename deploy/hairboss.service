@@ -1,0 +1,18 @@
+[Unit]
+Description=Batuhan Veysel Hair Boss randevu sistemi
+After=network.target
+
+[Service]
+Type=simple
+User=hairboss
+WorkingDirectory=/opt/hairboss
+ExecStart=/usr/bin/node --disable-warning=ExperimentalWarning server.js
+Restart=always
+RestartSec=3
+Environment=NODE_ENV=production
+NoNewPrivileges=true
+ProtectSystem=full
+ReadWritePaths=/opt/hairboss/data
+
+[Install]
+WantedBy=multi-user.target

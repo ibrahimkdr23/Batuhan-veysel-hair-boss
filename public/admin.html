@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hair Boss · Yönetim</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0e0d0b">
+  <link rel="manifest" href="/admin.webmanifest">
+  <link rel="icon" href="/icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HB Yönetim">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .topbar { display: flex; align-items: center; gap: 12px; padding: calc(14px + env(safe-area-inset-top)) 16px 10px; max-width: 760px; margin: 0 auto; }
+    .topbar img { width: 38px; height: 38px; border-radius: 10px; }
+    .topbar h1 { font-size: 1.1rem; margin: 0; flex: 1; }
+    .topbar h1 span { color: var(--gold); }
+    .wrap { max-width: 760px; }
+    .tabs { display: flex; gap: 6px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 4px; position: sticky; top: 0; z-index: 5; }
+    .tab { flex: 1; border: 0; background: transparent; padding: 10px 4px; border-radius: 9px; cursor: pointer; font-weight: 600; color: var(--muted); font-size: .9rem; }
+    .tab.on { background: var(--gold); color: #1a1408; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .row > * { flex: 1; min-width: 0; }
+    .chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+    .chip { flex: none; border: 1px solid var(--line); background: var(--bg-2); border-radius: 999px; padding: 7px 12px; cursor: pointer; font-size: .85rem; }
+    .chip.on { border-color: var(--gold); color: var(--gold-2); }
+    .date-head { margin: 18px 0 8px; font-weight: 700; color: var(--gold-2); display: flex; justify-content: space-between; }
+    .appt { display: flex; gap: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 8px; }
+    .appt .t { font-size: 1.15rem; font-weight: 800; min-width: 54px; }
+    .appt .info { flex: 1; min-width: 0; }
+    .appt .nm { font-weight: 700; }
+    .appt .ph a { text-decoration: none; }
+    .appt .note { color: var(--muted); font-size: .85rem; margin-top: 2px; word-wrap: break-word; }
+    .appt .acts { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .appt.cancelled { opacity: .5; }
+    .appt.cancelled .t, .appt.cancelled .nm { text-decoration: line-through; }
+    .appt.done { opacity: .7; }
+    .badge { display: inline-block; font-size: .7rem; padding: 2px 7px; border-radius: 999px; background: var(--bg-2); color: var(--muted); margin-left: 6px; vertical-align: 2px; }
+    .badge.c { color: var(--danger); }
+    .badge.d { color: var(--ok); }
+    /* Takvim */
+    .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .cal-head b { font-size: 1.05rem; }
+    .cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+    .cal .wd { text-align: center; font-size: .72rem; color: var(--muted); padding: 4px 0; cursor: pointer; border-radius: 6px; }
+    .cal .wd:hover { color: var(--gold-2); }
+    .cd { min-width: 0; min-height: 54px; border: 1px solid var(--line); background: var(--bg-2); border-radius: 10px; cursor: pointer; padding: 3px 2px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-size: .95rem; position: relative; }
+    .cd .n { font-weight: 700; margin-top: 2px; }
+    .cd .h { font-size: .58rem; color: var(--ok); line-height: 1.15; text-align: center; }
+    .cd .b { font-size: .6rem; color: var(--gold-2); }
+    .cd.open { background: #17281c; border-color: #2c5a3a; }
+    .cd.past { opacity: .35; cursor: default; }
+    .cd.blank { visibility: hidden; }
+    .cd.today { box-shadow: 0 0 0 1px var(--gold) inset; }
+    .cd.sel { background: var(--gold); color: #1a1408; border-color: var(--gold); }
+    .cd.sel .h, .cd.sel .b { color: #1a1408; }
+    .legend { display: flex; gap: 14px; font-size: .78rem; color: var(--muted); margin-top: 10px; flex-wrap: wrap; }
+    .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 4px; vertical-align: -1px; margin-right: 4px; }
+    .panel-sticky { padding: 4px 0 calc(12px + env(safe-area-inset-bottom)); }
+    .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: #222; border: 1px solid var(--line); padding: 10px 16px; border-radius: 10px; z-index: 99; font-size: .9rem; max-width: 90vw; }
+    .stat { display: flex; gap: 8px; margin-top: 12px; }
+    .stat div { flex: 1; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px; text-align: center; }
+    .stat b { display: block; font-size: 1.4rem; color: var(--gold-2); }
+    .stat span { font-size: .75rem; color: var(--muted); }
+    .check-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: .9rem; color: var(--text); }
+    .check-row input { width: 20px; height: 20px; accent-color: var(--gold); }
+  </style>
+</head>
+<body>
+  <!-- Giriş -->
+  <main class="wrap hidden" id="loginView">
+    <header class="hero">
+      <img class="logo" src="/icons/icon-192.png" alt="">
+      <h1>Hair Boss <span>Yönetim</span></h1>
+    </header>
+    <form class="card" id="loginForm">
+      <label for="pw">Şifre</label>
+      <input type="password" id="pw" autocomplete="current-password" required>
+      <div class="alert err hidden" id="loginErr"></div>
+      <button class="btn block" type="submit">Giriş yap</button>
+    </form>
+  </main>
+
+  <!-- Panel -->
+  <div class="hidden" id="appView">
+    <div class="topbar">
+      <img src="/icons/icon-192.png" alt="">
+      <h1>Hair Boss <span>Yönetim</span></h1>
+      <button class="btn small ghost" id="refresh" title="Yenile">↻</button>
+    </div>
+    <main class="wrap">
+      <div class="card install hidden" id="installCard" style="margin-top:0;margin-bottom:12px">
+        <img src="/icons/icon-192.png" alt="">
+        <div class="txt"><b>Paneli telefona yükle</b><span class="muted">Randevularını uygulama gibi takip et.</span></div>
+        <div class="install-actions">
+          <button class="btn small" id="installBtn">Yükle</button>
+          <button class="btn small ghost" id="installClose">Sonra</button>
+        </div>
+      </div>
+
+      <nav class="tabs">
+        <button class="tab on" data-tab="appts">Randevular</button>
+        <button class="tab" data-tab="days">Çalışma Günlerim</button>
+        <button class="tab" data-tab="settings">Ayarlar</button>
+      </nav>
+
+      <!-- RANDEVULAR -->
+      <section id="tab-appts">
+        <div class="stat">
+          <div><b id="stToday">–</b><span>Bugün</span></div>
+          <div><b id="stTomorrow">–</b><span>Yarın</span></div>
+          <div><b id="stWeek">–</b><span>7 gün</span></div>
+        </div>
+        <div class="row" style="margin-top:14px">
+          <div class="chips" id="filterChips">
+            <button class="chip on" data-f="upcoming">Yaklaşan</button>
+            <button class="chip" data-f="today">Bugün</button>
+            <button class="chip" data-f="tomorrow">Yarın</button>
+            <button class="chip" data-f="past">Geçmiş</button>
+          </div>
+          <button class="btn small" id="addAppt" style="flex:none">+ Randevu ekle</button>
+        </div>
+        <label class="check-row" style="margin-top:8px"><input type="checkbox" id="showCancelled"> İptal edilenleri göster</label>
+        <div id="apptList"><div class="spinner"></div></div>
+      </section>
+
+      <!-- ÇALIŞMA GÜNLERİ -->
+      <section id="tab-days" class="hidden">
+        <div class="card">
+          <p class="muted small" style="margin-top:0">Çalışacağın günlere dokunarak seç, saatleri girip <b>Aç</b>'a bas. Müşteriler sadece açtığın günlerden randevu alabilir. Haftanın gün adına dokunursan o ayın tüm o günleri seçilir.</p>
+          <div class="cal-head">
+            <button class="btn small ghost" id="prevMonth" aria-label="Önceki ay">‹</button>
+            <b id="monthTitle"></b>
+            <button class="btn small ghost" id="nextMonth" aria-label="Sonraki ay">›</button>
+          </div>
+          <div class="cal" id="cal"></div>
+          <div class="legend">
+            <span><i style="background:#17281c;border:1px solid #2c5a3a"></i>Açık</span>
+            <span><i style="background:var(--gold)"></i>Seçili</span>
+            <span><i style="background:var(--bg-2);border:1px solid var(--line)"></i>Kapalı</span>
+          </div>
+        </div>
+        <div class="panel-sticky">
+          <div class="card" style="margin-top:0">
+            <div class="row">
+              <div><label for="dStart" style="margin-top:0">Başlangıç</label><input type="time" id="dStart" value="10:00" step="300"></div>
+              <div><label for="dEnd" style="margin-top:0">Bitiş</label><input type="time" id="dEnd" value="20:00" step="300"></div>
+            </div>
+            <label class="check-row"><input type="checkbox" id="dBreakOn"> Mola ekle</label>
+            <div class="row hidden" id="breakRow">
+              <div><label for="dBs">Mola başlangıç</label><input type="time" id="dBs" value="13:00" step="300"></div>
+              <div><label for="dBe">Mola bitiş</label><input type="time" id="dBe" value="14:00" step="300"></div>
+            </div>
+            <div class="row" style="margin-top:14px">
+              <button class="btn" id="openDays" disabled>Aç</button>
+              <button class="btn danger" id="closeDays" disabled>Kapat</button>
+              <button class="btn ghost" id="clearSel" disabled>Seçimi temizle</button>
+            </div>
+            <p class="muted small" id="selInfo" style="margin:8px 0 0">Gün seçilmedi.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- AYARLAR -->
+      <section id="tab-settings" class="hidden">
+        <form class="card" id="settingsForm">
+          <label for="sSlot" style="margin-top:0">Randevu süresi (dakika)</label>
+          <select id="sSlot">
+            <option value="15">15 dk</option><option value="20">20 dk</option><option value="30">30 dk</option>
+            <option value="40">40 dk</option><option value="45">45 dk</option><option value="60">60 dk</option>
+            <option value="90">90 dk</option>
+          </select>
+          <label for="sAhead">Müşteri en fazla kaç gün sonrasına randevu alabilsin?</label>
+          <input type="number" id="sAhead" min="1" max="365">
+          <label for="sNotice">Bugün için en az kaç dakika önceden randevu alınsın?</label>
+          <input type="number" id="sNotice" min="0" max="1440" step="5">
+          <button class="btn block" type="submit">Kaydet</button>
+        </form>
+        <div class="card">
+          <b>SMS durumu</b>
+          <p class="muted small" id="smsInfo" style="margin-bottom:0"></p>
+        </div>
+        <div class="card">
+          <b>Müşteri randevu linki</b>
+          <p class="muted small">Bu linki Instagram biyografine, WhatsApp durumuna koyabilirsin.</p>
+          <div class="row"><input type="text" id="publicLink" readonly><button class="btn small" id="copyLink" style="flex:none">Kopyala</button></div>
+        </div>
+        <button class="btn block ghost" id="logout">Çıkış yap</button>
+      </section>
+    </main>
+  </div>
+
+  <!-- Randevu ekleme -->
+  <div class="modal hidden" id="addModal" role="dialog" aria-modal="true">
+    <form class="modal-box" id="addForm">
+      <h3>Randevu ekle</h3>
+      <p class="muted small" style="margin-top:-6px">Telefonla / dükkanda alınan randevuları buraya ekle, o saat müşterilere dolu görünür.</p>
+      <div class="row">
+        <div><label for="aDate">Gün</label><input type="date" id="aDate" required></div>
+        <div><label for="aTime">Saat</label><select id="aTime"></select></div>
+      </div>
+      <label for="aName">Ad Soyad</label>
+      <input type="text" id="aName" maxlength="60" placeholder="Müşteri">
+      <label for="aPhone">Telefon (isteğe bağlı)</label>
+      <input type="tel" id="aPhone" inputmode="tel" placeholder="05XX XXX XX XX">
+      <label for="aNote">Not</label>
+      <input type="text" id="aNote" maxlength="200">
+      <label class="check-row"><input type="checkbox" id="aSms"> Müşteriye onay SMS'i gönder</label>
+      <div class="alert err hidden" id="addErr"></div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn ghost" type="button" id="addCancel">Vazgeç</button>
+        <button class="btn" type="submit">Ekle</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Yükleme talimatı -->
+  <div class="modal hidden" id="iosModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <h3>iPhone'a yükle</h3>
+      <ol class="steps-list" id="iosSteps">
+        <li>Alttaki <b>Paylaş</b> butonuna dokun</li>
+        <li><b>Ana Ekrana Ekle</b>'yi seç</li>
+        <li>Sağ üstten <b>Ekle</b>'ye dokun</li>
+      </ol>
+      <p class="muted small" id="iosNote"></p>
+      <button class="btn block" id="iosOk">Tamam</button>
+    </div>
+  </div>
+
+  <script src="/install.js"></script>
+  <script src="/admin.js"></script>
+</body>
+</html>

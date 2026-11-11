@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Batuhan Veysel Hair Boss · Randevu</title>
+  <meta name="description" content="Batuhan Veysel Hair Boss online randevu. Müsait gün ve saati seç, randevunu hemen oluştur.">
+  <meta name="theme-color" content="#0e0d0b">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Hair Boss">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="hero">
+    <img class="logo" src="/icons/icon-192.png" alt="">
+    <h1>Batuhan Veysel <span>Hair Boss</span></h1>
+    <p>Online randevu</p>
+    <div class="contact" id="contact"></div>
+  </header>
+
+  <main class="wrap">
+    <!-- Uygulama olarak yükle -->
+    <div class="card install hidden" id="installCard">
+      <img src="/icons/icon-192.png" alt="">
+      <div class="txt"><b>Uygulamayı yükle</b><span class="muted">Ana ekrandan tek dokunuşla randevu al.</span></div>
+      <div class="install-actions">
+        <button class="btn small" id="installBtn">Yükle</button>
+        <button class="btn small ghost" id="installClose" aria-label="Kapat">Sonra</button>
+      </div>
+    </div>
+
+    <div id="booking">
+      <section class="card">
+        <h2 class="step-title"><span class="step-num">1</span>Gün seç</h2>
+        <div class="days" id="days"><div class="spinner"></div></div>
+      </section>
+
+      <section class="card hidden" id="slotsCard">
+        <h2 class="step-title"><span class="step-num">2</span>Saat seç</h2>
+        <div class="slots" id="slots"></div>
+      </section>
+
+      <section class="card hidden" id="formCard">
+        <h2 class="step-title"><span class="step-num">3</span>Bilgilerin</h2>
+        <div class="summary" id="summary"></div>
+        <form id="form" novalidate>
+          <label for="name">Ad Soyad</label>
+          <input type="text" id="name" autocomplete="name" maxlength="60" required>
+          <label for="phone">Cep telefonu</label>
+          <input type="tel" id="phone" autocomplete="tel" inputmode="tel" placeholder="05XX XXX XX XX" maxlength="17" required>
+          <label for="note">Not (isteğe bağlı)</label>
+          <textarea id="note" maxlength="200" placeholder="Saç, sakal, saç + sakal..."></textarea>
+          <div class="alert err hidden" id="err"></div>
+          <button class="btn block" id="submit" type="submit">Randevuyu Onayla</button>
+          <p class="muted small" style="margin:10px 0 0">Randevun oluşunca telefonuna onay SMS'i gönderilir.</p>
+        </form>
+      </section>
+    </div>
+
+    <section class="card success hidden" id="done">
+      <div class="check">✓</div>
+      <h2>Randevun oluşturuldu</h2>
+      <div class="big" id="doneText"></div>
+      <p class="muted" id="doneSms"></p>
+      <button class="btn ghost" id="again">Yeni randevu al</button>
+    </section>
+
+    <footer>
+      © Batuhan Veysel Hair Boss · <a href="/admin">Yönetim</a>
+    </footer>
+  </main>
+
+  <!-- iPhone / Safari yükleme talimatı -->
+  <div class="modal hidden" id="iosModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <h3>iPhone'a yükle</h3>
+      <ol class="steps-list" id="iosSteps">
+        <li>Alttaki <b>Paylaş</b> butonuna dokun
+          <svg class="ios-icon" viewBox="0 0 24 24" fill="none" stroke="#4da3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>
+        </li>
+        <li>Listeyi kaydırıp <b>Ana Ekrana Ekle</b>'yi seç
+          <svg class="ios-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></svg>
+        </li>
+        <li>Sağ üstten <b>Ekle</b>'ye dokun. Hair Boss ana ekranında!</li>
+      </ol>
+      <p class="muted small" id="iosNote"></p>
+      <button class="btn block" id="iosOk">Tamam</button>
+    </div>
+  </div>
+
+  <script src="/install.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
