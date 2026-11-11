@@ -364,6 +364,11 @@
     if (!document.hidden && !$('appView').classList.contains('hidden')) loadAppts();
   });
 
+  window.addEventListener('hb-refresh', function () {
+    if ($('appView').classList.contains('hidden')) return;
+    if (!$('tab-days').classList.contains('hidden')) loadWorkdays(); else loadAppts();
+  });
+
   boot();
   // İlk açılışta 401 gelirse giriş ekranı gösterilir
 })();

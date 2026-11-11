@@ -163,5 +163,8 @@
     loadDays();
   });
 
+  // Dışarıdan yenileme isteği (ör. önizleme ortamı)
+  window.addEventListener('hb-refresh', function () { if (!$('booking').classList.contains('hidden') && $('formCard').classList.contains('hidden')) loadDays(); });
+
   loadDays();
 })();
